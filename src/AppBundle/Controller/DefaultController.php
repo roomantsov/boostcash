@@ -17,8 +17,10 @@ class DefaultController extends Controller
      * @Route("/", name="home")
      * @Template("default/index.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $r)
     {
+        $em = $this->getDoctrine()->getManager();
+        $this->get('app.referalsystem')->checkRefLink($r, $em);
         return ['a' => 'mainpage'];
     }
 
@@ -113,7 +115,8 @@ class DefaultController extends Controller
         return ['tasks' => [
                 'Настроить репозитории',
                 'Настроить время',
-                'Написать аутентификацию'
+                'Написать аутентификацию',
+                'Разобраться с куки в Реферал сервисе'
             ]];
     }
 
@@ -139,5 +142,15 @@ class DefaultController extends Controller
         // $obt = $repo->findOneByInviter(333);
 
         return ['a' => 'Database test'];
+    }
+
+    /**
+     * @Route("/service/test")
+     * @Template("default/index.html.twig")
+     */
+    public function serviceTest(){
+        $test_service = $this->get('referaller');
+        $test_service->test();
+        return ['a' => 'Service Test'];
     }
 }
