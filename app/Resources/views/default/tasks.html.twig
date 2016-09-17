@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<h1>Задачи:</h1>
+<ul>
+	{% for task in tasks %}
+		<li>{{ task }}</li>	
+	{% endfor %}
+</ul>
+{% endblock %}
