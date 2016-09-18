@@ -17,10 +17,16 @@ class DefaultController extends Controller
      * @Route("/", name="home")
      * @Template("default/index.html.twig")
      */
-    public function indexAction(Request $r)
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $this->get('app.referalsystem')->checkRefLink($r, $em);
+        $this->get('app.referalsystem')->checkRefLink($request, $em);
+        $flashes = $request->getSession()->getFlashBag()->get('notice');
+
+        foreach($flashes as $flash){
+            dump($flash);
+        }
+
         return ['a' => 'mainpage'];
     }
 
@@ -71,6 +77,7 @@ class DefaultController extends Controller
         $link = $url . '?' . urldecode(http_build_query($params));
 
         if($request->query->get('code')){
+
             $params = array(
                 'client_id' => $client_id,
                 'client_secret' => $client_secret,
@@ -78,7 +85,13 @@ class DefaultController extends Controller
                 'redirect_uri' => $redirect_uri
             );
 
-            $token = json_decode(file_get_contents('https://oauth.vk.com/access_token' . '?' . urldecode(http_build_query($params))), true);
+            try{
+                $token = json_decode(file_get_contents('https://oauth.vk.com/access_token' . '?' . urldecode(http_build_query($params))), true);
+            } catch (\Exception $e) {
+                $request->getSession()->getFlashBag()->add('notice', 'Error with token, used or unexisting Code');
+                return $this->redirectToRoute('login');
+            }
+
             
             $params = array(
                 'uids'         => $token['user_id'],
@@ -86,11 +99,16 @@ class DefaultController extends Controller
                 'access_token' => $token['access_token']
             );
 
-            $userInfo = json_decode(file_get_contents('https://api.vk.com/method/users.get' . '?' . urldecode(http_build_query($params))), true);
+            try{
+                $userInfo = json_decode(file_get_contents('https://api.vk.com/method/users.get' . '?' . urldecode(http_build_query($params))), true);
+            } catch (\Exception $e) {
+                $request->getSession()->getFlashBag()->add('notice', 'Error with vk authorization');
+                return $this->redirectToRoute('home');
+            }
 
-            dump($userInfo);
+            $em = $this->getDoctrine()->getManager();
+            $this->get('app.usersystem')->login($userInfo['response'][0], $em);
 
-            //return $this->redirect($this->generateUrl('login'));
             //return $this->redirectToRoute('login');
         }
 
