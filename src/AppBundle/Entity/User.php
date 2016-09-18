@@ -31,16 +31,23 @@ class User
     /**
      * @var string
      *
+     * @ORM\Column(name="avatar", type="text")
+     */
+    private $avatar;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="bdate", type="text")
+     */
+    private $bdate;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="vkid", type="string", length=255, unique=true)
      */
     private $vkid;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="refbonus", type="integer")
-     */
-    private $refbonus;
 
     /**
      * @var int
@@ -113,6 +120,54 @@ class User
     }
 
     /**
+     * Set avatar
+     *
+     * @param string $avatar
+     *
+     * @return User
+     */
+    public function setAvatar($avatar)
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * Get avatar
+     *
+     * @return string
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
+
+    /**
+     * Set bdate
+     *
+     * @param string $bdate
+     *
+     * @return User
+     */
+    public function setBdate($bdate)
+    {
+        $this->bdate = $bdate;
+
+        return $this;
+    }
+
+    /**
+     * Get bdate
+     *
+     * @return string
+     */
+    public function getBdate()
+    {
+        return $this->bdate;
+    }
+
+    /**
      * Set vkid
      *
      * @param string $vkid
@@ -134,30 +189,6 @@ class User
     public function getVkid()
     {
         return $this->vkid;
-    }
-
-    /**
-     * Set refbonus
-     *
-     * @param integer $refbonus
-     *
-     * @return User
-     */
-    public function setRefbonus($refbonus)
-    {
-        $this->refbonus = $refbonus;
-
-        return $this;
-    }
-
-    /**
-     * Get refbonus
-     *
-     * @return int
-     */
-    public function getRefbonus()
-    {
-        return $this->refbonus;
     }
 
     /**

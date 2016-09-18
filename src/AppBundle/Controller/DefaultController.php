@@ -8,8 +8,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;    // Routing annot
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template; // Twig smart templating annotation
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;     // Get class Controller
 use Symfony\Component\HttpFoundation\Request;                // Get class request
-                                                            //
-use AppBundle\Entity\Referal;                              // Get class of Referal Entity
+use Symfony\Component\HttpFoundation\Session\Session;       // Get session class
+                                                           //
+use AppBundle\Entity\Referal;                             // Get class of Referal Entity
 
 class DefaultController extends Controller
 {
@@ -21,11 +22,13 @@ class DefaultController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $this->get('app.referalsystem')->checkRefLink($request, $em);
-        $flashes = $request->getSession()->getFlashBag()->get('notice');
 
+        $flashes = $request->getSession()->getFlashBag()->get('notice');
         foreach($flashes as $flash){
             dump($flash);
         }
+
+        dump($request->getSession()->all());
 
         return ['a' => 'mainpage'];
     }
@@ -40,12 +43,29 @@ class DefaultController extends Controller
     }
 
     /**
+     * @Route("/profile/me/", name="myprofile")
+     * @Template("default/profile.html.twig")
+     */
+    public function profileMeAction()
+    {
+        $session = new Session;
+        return [
+            'page' => 'My profile',
+            'user' => $session->all()
+        ];
+    }
+
+    /**
+     * @Route("/profile/", defaults={"userid":-1})
      * @Route("/profile/{userid}", name="profile")
-     * @Template("default/index.html.twig")
+     * @Template("default/profile.html.twig")
      */
     public function profileAction($userid)
     {
-        return ['a' => $userid];
+        return [
+            'page' => $userid,
+            'user' => []
+        ];
     }
 
     /**
@@ -62,6 +82,14 @@ class DefaultController extends Controller
      * @Template("default/login.html.twig")
      */
     public function loginAction(Request $request){
+
+        if($request->getSession()->has('user')){
+            $request->getSession()->getFlashBag()->add('notice', 'You\'ve already authorized');
+            return $this->redirectToRoute('home');
+        }
+
+        // generating link for VK authorization
+
         $client_id = '5630393'; // ID приложения
         $client_secret = 'jrS0ObxbFOOyp5iHkPXm'; // Защищённый ключ
         $redirect_uri = 'http://localhost:8000/login'; // Адрес сайта
@@ -75,6 +103,8 @@ class DefaultController extends Controller
         );
 
         $link = $url . '?' . urldecode(http_build_query($params));
+
+        // end of generating link fr VK authorization
 
         if($request->query->get('code')){
 
@@ -107,15 +137,16 @@ class DefaultController extends Controller
             }
 
             $em = $this->getDoctrine()->getManager();
-            $this->get('app.usersystem')->login($userInfo['response'][0], $em);
+            $refSystem = $this->get('app.referalsystem');
+            $finSystem = $this->get('app.financesystem');
+            $this->get('app.usersystem')->login($userInfo['response'][0], $em, $refSystem, $finSystem);
 
-            //return $this->redirectToRoute('login');
+            return $this->redirectToRoute('home');
+        } else {
+            //$request->getSession()->getFlashBag()->add('notice', 'Error with vk authorization, no get parameter "code"');
+            //return $this->redirectToRoute('home'); // Когда вынесу кнопку, раскомментить
         }
-
-        return [
-            'page' => 'loginpage',
-            'link' => $link
-        ];
+        return ['link' => $link, 'page' => 'Login Page'];
     }
 
 

@@ -10,6 +10,9 @@ services:
     app.usersystem:
         class: AppBundle\Util\UserSystem
         parameters: []
+    app.financesystem:
+        class: AppBundle\Util\FinanceSystem
+        parameters: []
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

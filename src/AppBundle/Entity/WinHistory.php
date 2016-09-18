@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * History
  *
- * @ORM\Table(name="history")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\HistoryRepository")
+ * @ORM\Table(name="winhistory")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\WinHistoryRepository")
  */
-class History
+class WinHistory
 {
     /**
      * @var int

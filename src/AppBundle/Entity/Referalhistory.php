@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="referalhistory")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ReferalhistoryRepository")
  */
-class Referalhistory
+class ReferalHistory
 {
     /**
      * @var int
@@ -41,13 +41,6 @@ class Referalhistory
      * @ORM\Column(name="inviterid", type="integer")
      */
     private $inviterid;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="percentamount", type="integer")
-     */
-    private $percentamount;
 
     /**
      * @var int
@@ -144,30 +137,6 @@ class Referalhistory
     public function getInviterid()
     {
         return $this->inviterid;
-    }
-
-    /**
-     * Set percentamount
-     *
-     * @param integer $percentamount
-     *
-     * @return Referalhistory
-     */
-    public function setPercentamount($percentamount)
-    {
-        $this->percentamount = $percentamount;
-
-        return $this;
-    }
-
-    /**
-     * Get percentamount
-     *
-     * @return int
-     */
-    public function getPercentamount()
-    {
-        return $this->percentamount;
     }
 
     /**

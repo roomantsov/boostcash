@@ -5,12 +5,12 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Paymenthistory
+ * FinanceHistory
  *
- * @ORM\Table(name="paymenthistory")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PaymenthistoryRepository")
+ * @ORM\Table(name="financehistory")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\FinanceHistoryRepository")
  */
-class PaymentHistory
+class FinanceHistory
 {
     /**
      * @var int
@@ -36,6 +36,13 @@ class PaymentHistory
     private $amount;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="cause", type="string", length=255)
+     */
+    private $cause;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="datetime", type="datetime")
@@ -58,7 +65,7 @@ class PaymentHistory
      *
      * @param integer $userid
      *
-     * @return Paymenthistory
+     * @return FinanceHistory
      */
     public function setUserid($userid)
     {
@@ -82,7 +89,7 @@ class PaymentHistory
      *
      * @param integer $amount
      *
-     * @return Paymenthistory
+     * @return FinanceHistory
      */
     public function setAmount($amount)
     {
@@ -102,11 +109,35 @@ class PaymentHistory
     }
 
     /**
+     * Set cause
+     *
+     * @param string $cause
+     *
+     * @return FinanceHistory
+     */
+    public function setCause($cause)
+    {
+        $this->cause = $cause;
+
+        return $this;
+    }
+
+    /**
+     * Get cause
+     *
+     * @return string
+     */
+    public function getCause()
+    {
+        return $this->cause;
+    }
+
+    /**
      * Set datetime
      *
      * @param \DateTime $datetime
      *
-     * @return Paymenthistory
+     * @return FinanceHistory
      */
     public function setDatetime($datetime)
     {
