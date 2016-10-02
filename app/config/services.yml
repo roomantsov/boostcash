@@ -13,6 +13,9 @@ services:
     app.financesystem:
         class: AppBundle\Util\FinanceSystem
         parameters: []
+    app.winsystem:
+        class: AppBundle\Util\WinSystem
+        parameters: []
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

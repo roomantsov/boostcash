@@ -3,11 +3,49 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li class="{% if app.request.attributes.get('_route') == 'home' %}active{% endif %}" >
+                        <a href="{{ path('home') }}">Home</a>
+                    </li>
+                    {% if app.session.get('user') %}
+                        <li class="{% if app.request.attributes.get('_route') == 'myprofile' %}active{% endif %}" >
+                            <a href="{{ path('myprofile') }}">My Profile</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="nav navbar-nav pull-right">
+                    {% if app.session.get('user') %}
+                        <li>
+                            <a href="{{ path('logout', {'redirectUrl' : app.request.uri|url_encode }) }}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="{% if app.request.attributes.get('_route') == 'login' %}active{% endif %}" >
+                            <a href="http://oauth.vk.com/authorize?client_id=5630393&redirect_uri=http://localhost:8000/login&response_type=code">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <nav class="navbar navbar-inverse">
+        </nav>
 	    <div class="container">
 	        {% block body %}{% endblock %}
 	    </div>
+
+        <script type="text/javascript">
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '{{ path("setOnline") }}', true);
+            xhr.timeout = 30000;
+            xhr.send();
+            setInterval(function(){
+                xhr.open('POST', '{{ path("setOnline") }}', true);
+                xhr.send();
+            }, 60000);
+        </script>
     </body>
 </html>

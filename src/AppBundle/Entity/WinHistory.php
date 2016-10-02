@@ -42,6 +42,20 @@ class WinHistory
      */
     private $itemid;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="value", type="integer")
+     */
+    private $value;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="isshowed", type="boolean")
+     */
+    private $isshowed;
+
 
     /**
      * Get id
@@ -123,6 +137,54 @@ class WinHistory
     public function getItemid()
     {
         return $this->itemid;
+    }
+
+    /**
+     * Set value
+     *
+     * @param integer $value
+     *
+     * @return History
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get value
+     *
+     * @return int
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * Set isshowed
+     *
+     * @param boolean $isshowed
+     *
+     * @return User
+     */
+    public function setIsshowed($isshowed)
+    {
+        $this->isshowed = $isshowed;
+
+        return $this;
+    }
+
+    /**
+     * Get isshowed
+     *
+     * @return bool
+     */
+    public function getIsshowed()
+    {
+        return $this->isshowed;
     }
 }
 

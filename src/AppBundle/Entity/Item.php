@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Item
  *
- * @ORM\Table(name="item")
+ * @ORM\Table(name="items")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ItemRepository")
  */
 class Item
@@ -41,6 +41,20 @@ class Item
      * @ORM\Column(name="itemrange", type="string", length=255)
      */
     private $itemrange;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255)
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="image", type="string", length=255)
+     */
+    private $image;
 
 
     /**
@@ -123,6 +137,54 @@ class Item
     public function getItemrange()
     {
         return $this->itemrange;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return Item
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set image
+     *
+     * @param string $image
+     *
+     * @return Item
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get image
+     *
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
     }
 }
 

@@ -1,5 +1,93 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>{{ page }}</h1>
+    <h1>{{ user.name }}</h1>
     {{ dump(user) }}
+    <div class="row">
+    	<div class="col-md-3">
+    		<div class="">
+    			<a href="#" class="thumbnail">
+    				<img data-src="#" src="{{ user.avatar }}" alt="">
+    			</a>
+    		</div>
+    	</div>
+    	<div class="col-md-6">
+    		<h3>{{ user.name }} <a href="https://vk.com/id{{ user.vkid }}" target="_blank">VK</a></h3>
+    		<h4>Кейсы: {{ openedcases }}</h4>
+    		<h4>Выигрыш: {{ user.winamount }}₽</h4>
+            {% if page == "myprofile" %}
+    		  <h4>Баланс: {{ user.balance }}₽</h4>
+            {% endif %}
+    	</div>
+    	<div class="col-md-3">
+            {% if page == "myprofile" %}
+    	    	<div class="row">    		
+    	    		<div class="col-md-6">
+    	    			<a type="button" class="btn btn-default">Вывести средства</a>
+    	    		</div>
+    	    		<div class="col-md-6">
+    	    			<a href="{{ path('paypageget') }}" type="button" class="btn btn-default">Пополнить баланс</a>
+    	    		</div>
+    	    	</div>
+            {% endif %}
+    	</div>
+    </div>
+    {% if page == "myprofile" %}
+        <div class="row">
+        	<div class="col-md-6">
+        		<div class="thumbnail">
+    	    		<h4>Пригласи друзей и заработай больше</h4>
+    	    		<p>Отправь свой уникальный код друзьям и получи 5% от каждого пополнения баланса другом!</p>
+    	    		<input type="text" disabled name="" id="input" class="form-control" value="{{ user.refcode }}" required="required" pattern="" title="">
+        		</div>
+        	</div>
+        	<div class="col-md-6">
+        		<div class="thumbnail">
+    	    		<h4>Введи код и получи 10 Рублей</h4>
+    	    		<p>У вас есть партнерский код? Введите его в поле и получите 10 рублей прямо сейчас!</p>
+                    <form method="POST" action="{{ path("addreferal") }}">
+        	    		{% if user.isrefered %}
+        	    			<input type="text" disabled name="" id="input" class="form-control" value="{{ user.refererRefCode }}" required="required" pattern="" title="">
+        	    		{% else %}
+        		    		<input type="text" name="refcode" id="input" class="form-control" value="" required>
+        		    		<br><button type="submit" class="btn btn-success">Ввести</button>
+        		    	{% endif %}
+                    </form>
+        		</div>
+        	</div>
+        </div>
+    {% endif %}
+    <h1>История призов</h1>
+    <div class="row">
+        {% for el in winHistory %}
+    	    <div class="col-sm-3 col-lg-3 col-md-3">
+    	        <div class="thumbnail">
+    	            <img src="{# el.item.image #}" alt="">
+    	            <div class="caption">
+    	                <h4><a href="{{ path("case", {"caseid":el.case.id}) }}">{{ el.case.name }}</a></h4>
+    	            </div>
+    	        </div>
+    	    </div>
+        {% endfor %}
+    </div>
+    {% if page == "myprofile" %}
+        <!-- <h1>История выигрышей</h1>
+        <div>
+            <div class="thumbnail">
+                <div class="caption">
+                    Вы открыли кейс №5, за 100 РУБ
+                </div>
+            </div>
+        </div> -->
+        <h1>Финансы</h1>
+        <div>
+            {% for el in financeHistory %}
+                <div class="thumbnail">
+                    <div class="caption">
+                        {{ el.description }} | {{ el.date|date("j/m/Y") }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
 {% endblock %}

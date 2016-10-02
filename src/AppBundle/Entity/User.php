@@ -57,6 +57,13 @@ class User
     private $balance;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="winamount", type="integer")
+     */
+    private $winamount;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="refcode", type="string", length=255)
@@ -83,6 +90,13 @@ class User
      * @ORM\Column(name="percentage", type="integer")
      */
     private $percentage;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="referer_ref_code", type="string", length=255)
+     */
+    private $refererRefCode;
 
 
     /**
@@ -213,6 +227,54 @@ class User
     public function getBalance()
     {
         return $this->balance;
+    }
+
+    /**
+     * Set winamount
+     *
+     * @param integer $winamount
+     *
+     * @return User
+     */
+    public function setWinamount($winamount)
+    {
+        $this->winamount = $winamount;
+
+        return $this;
+    }
+
+    /**
+     * Get winamount
+     *
+     * @return int
+     */
+    public function getWinamount()
+    {
+        return $this->winamount;
+    }
+
+    /**
+     * Set refererRefCode
+     *
+     * @param string $refererRefCode
+     *
+     * @return User
+     */
+    public function setRefererRefCode($refererRefCode)
+    {
+        $this->refererRefCode = $refererRefCode;
+
+        return $this;
+    }
+
+    /**
+     * Get refererRefCode
+     *
+     * @return string
+     */
+    public function getRefererRefCode()
+    {
+        return $this->refererRefCode;
     }
 
     /**

@@ -1,5 +1,75 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>{{ a }}</h1>
+	<h1>Цифры</h1>
+	<div class="row">
+		<div class="col-md-3"><div class="thumbnail"><b>Пользователей: </b><span id="users">{{ usersNumber }}</span></div></div>
+		<div class="col-md-3"><div class="thumbnail"><b>Онлайн: </b><span id="online">{{ online }}</span></div></div>
+		<div class="col-md-3"><div class="thumbnail"><b>Открыто кейсов: </b><span id="cases">{{ winsNumber }}</span></div></div>
+        <div class="col-md-3"><div class="thumbnail"><b>Денег выплачено: </b><span id="won">{{ summaryWon }}</span>₽</div></div>
+	</div>
+    <h1>Лента</h1>
+    <div class="row" id="ribbon">
+    	{% for item in ribbon %}
+	    	<div class="col-md-1 col-xs-1">
+	    		<div class="thumbnail"><img src="{{ item.image }}" alt=""></div>
+	    	</div>
+	    {% endfor %}
+    </div>
+    <h1>Кейсы</h1>
+    <div class="row">
+    	{% for case in cases %}
+	    	<div class="col-md-3">
+	    		<a href="{{ path("case", {"caseid" : case.id }) }}">
+	    			<div class="thumbnail"><img src="{{ case.image }}" alt=""></div>
+	    		</a>
+	    		<h4>Цена: {{ case.price }} РУБ</h4>
+	    	</div>
+	    {% endfor %}
+    </div>
+    <h1>Топ везунчиков</h1>
+    <div class="row">
+    	{% for lucky in luckies %}
+	    	<div class="col-md-1">
+	    		<a href="{{ path("profile", {"userid" : lucky.id}) }}"><div class="thumbnail"><img src="{{ lucky.avatar }}" alt=""></div></a>
+                Открыто кейсов: <b>{{ lucky.totalCasesOpened }}</b><br>
+                Выигрыш: <b>{{ lucky.winamount }}₽</b>
+	    	</div>
+	    {% endfor %}
+    </div>
+<script type="text/javascript">	
+	var xhrOnline = new XMLHttpRequest();
+    setInterval(function(){
+        xhrOnline.open('POST', '{{ path("getDynData") }}', true);
+        xhrOnline.timeout = 5000;
+        xhrOnline.onreadystatechange = function(){
+            if(xhrOnline.readyState != 4) return;
+            if(xhrOnline.status !== 200) return;
+            var DynamicData = JSON.parse(xhrOnline.responseText);
+            var DD = DynamicData;
+            document.getElementById('online').innerHTML = DD.online;
+            document.getElementById('cases').innerHTML = DD.cases;
+            document.getElementById('users').innerHTML = DD.users;
+            document.getElementById('won').innerHTML = DD.won;
+
+            for(i = 0; i < DD.ribbon.length; i++){
+                var ribbonElem = document.createElement('div');
+                ribbonElem.className = 'col-md-1';
+                var thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                var image = document.createElement('img');
+                image.src = DD.ribbon[i].itemImage;
+
+                thumbnail.appendChild(image);
+                ribbonElem.appendChild(thumbnail);
+
+                var lastChild = ribbon.children[ribbon.children.length - 1];
+                console.log(lastChild);
+                ribbon.removeChild(lastChild);
+                ribbon.insertBefore(ribbonElem, ribbon.children[0]);
+            }
+        }
+        xhrOnline.send();
+    }, 3000);
+</script>
 {% endblock %}

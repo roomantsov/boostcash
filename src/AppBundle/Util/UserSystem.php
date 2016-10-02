@@ -5,6 +5,7 @@ namespace AppBundle\Util;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\User;
 use Symfony\Component\HttpFoundation\Session\Session;
+use AppBundle\Entity\Visitor;
 
 class UserSystem {
 
@@ -28,8 +29,10 @@ class UserSystem {
 			 ->setRefcode($refSystem->generateRefCode($em))
 			 ->setIscheat(false)
 			 ->setIsrefered(false)
-			 ->setPercentage(10)
+			 ->setWinamount(0)
+			 ->setPercentage(5)
 			 ->setAvatar($userInfo['photo_big'])
+			 ->setRefererRefCode('')
 			 ->setBdate($userInfo['bdate']);
 
 		$session = new Session;
@@ -37,7 +40,6 @@ class UserSystem {
 			// Put into referal databases
 			if($inviter = $em->getRepository('AppBundle:User')->findOneByRefcode($session->get('ref'))){
 				// Add according to inviter Referal level
-				echo 'has code';
 				$em->persist($user);
 				$em->flush();
 				$visitorId = $user->getId();
@@ -52,6 +54,33 @@ class UserSystem {
 		$em->flush();
 
 		return $user;
+	}
+
+	public function getOnline($em){
+		$visitRepo = $em->getRepository('AppBundle:Visitor');
+		$visitor = $visitRepo->findAll();
+
+		$numberOfOnlineUsers = $visitRepo->createQueryBuilder('AppBundle\Entity\Visitor')
+			->select('COUNT(1)')
+	        ->where('AppBundle\Entity\Visitor.lastseen >= :end')
+	        ->setParameter('end', new \DateTime('-3 minutes'))
+	        ->getQuery()
+	        ->execute();
+
+        return intval($numberOfOnlineUsers[0][1]);
+	}
+
+	public function setOnline($ip, $em){
+		$visitRepo = $em->getRepository('AppBundle:Visitor');
+		if(!$visitor = $visitRepo->findOneByIp($ip)){
+			$visitor = new Visitor;
+			$visitor->setIp($ip);
+		}
+
+		$visitor->setLastseen(new \Datetime);
+
+		$em->persist($visitor);
+		$em->flush();
 	}
 
 }

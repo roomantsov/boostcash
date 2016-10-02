@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="row">
+    	<div class="col-md-4"></div>
+    	<div class="col-md-4">
+    		<div class="thumbnail">
+    			<img id="prize" src="{{ case.image }}" alt="">
+    		</div>
+    	</div>
+    	<div class="col-md-4"></div>
+    </div>
+    <div class="row">
+    	<div class="col-md-4"></div>
+    	<div class="col-md-4">
+	    	<a class="btn btn-default">Цена: {{ case.price }} РУБ</a>
+	    	{% if app.session.has('user') %}
+	    		{% if app.session.get('user').balance >= case.price %}
+	    			<a onclick="opencase('{{ path("drop", {"caseid": case.id}) }}');" class="btn btn-primary">Открыть кейс</a>
+	    		{% else %}
+	    			<a href="{{ path('paypageget') }}" class="btn btn-warning">Пополнить баланс</a>
+	    		{% endif %}
+	    	{% else %}
+	    		<a href="http://oauth.vk.com/authorize?client_id=5630393&redirect_uri=http://localhost:8000/login&response_type=code" class="btn btn-success">Авторизоваться</a>
+	    	{% endif %}
+    	</div>
+    	<div class="col-md-4"></div>
+    </div>
+    <h1>Что может выпасть</h1>
+    <div class="row">
+    	{% for item in items %}
+	    	<div class="col-md-3">
+	    		<div class="thumbnail"><img src="{{ item.image }}" alt=""></div>
+	    	</div>
+	    {% endfor %}
+    </div>
+    <script type="text/javascript">
+        function opencase(caseurl){
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', caseurl, true);
+            xhr.onreadystatechange = function(){
+                if (xhr.readyState != 4) return;
+                if(xhr.responseText == 'error') document.location.reload();
+                document.getElementById('prize').src = 'https://opcash.ru/uploads/cases/coin-'+ xhr.responseText +'.svg';
+            }
+            xhr.send();
+        }
+    </script>
+{% endblock %}

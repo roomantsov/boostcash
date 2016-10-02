@@ -4,11 +4,12 @@ namespace AppBundle\Util;
 
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Referal;
+use AppBundle\Entity\ReferalHistory;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class ReferalSystem {
 
 	public function addReferal($inviterId, $visitorId, $finSystem, $em){
-		echo 'into referal';
 		$referal = new Referal;
 		$referal->setInviter($inviterId)
 				->setVisitor($visitorId)
@@ -20,6 +21,7 @@ class ReferalSystem {
         $userInvitings = count($em->getRepository('AppBundle:Referal')->findByInviter($inviterId));
 
         global $percentage;
+        $percentage = $em->getRepository('AppBundle:User')->findOneById($inviterId)->getPercentage();
 
         switch($userInvitings){
         	case 10:
@@ -41,12 +43,15 @@ class ReferalSystem {
         $em->persist($inviter);
 
         $visitor = $em->getRepository('AppBundle:User')->findOneById($visitorId);
-        $visitor->setIsrefered(true);
+        $visitor->setIsrefered(true)->setRefererRefCode($inviter->getRefcode());
         $finSystem->increaseBalance(10, $visitorId, 'started referal', $em);
+        $finSystem->increaseBalance(1, $inviterId, 'refered the user', $em);
         $em->persist($visitor);
 
         $em->flush();
-		// Log to pay history
+
+        $session = new Session();
+        $session->set('user', $visitor);
 
 	}
 
@@ -63,13 +68,40 @@ class ReferalSystem {
 	public function generateRefCode($em){
 		$charset = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz';
 		$code = '';
-		while(strlen($code) < 12){
+		while(strlen($code) < 8){
 			$code .= $charset[mt_rand(0, strlen($charset) - 1)];
 		}
 		if($em->getRepository('AppBundle:User')->findOneByRefcode($code))
 			$code = $this->generateRefCode($em);
 
 		return $code;
+	}
+
+	public function referalMargin($referedUserId, $amount, $em, $finSystem){
+		$referalRepo = $em->getRepository('AppBundle:Referal');
+		$userRepo = $em->getRepository('AppBundle:User');
+
+		$refererId = $referalRepo->findOneByVisitor($referedUserId)->getInviter();
+		$referer = $userRepo->findOneById($refererId);
+		
+		if($referer == null){
+			return;
+		}
+
+		$percentage = $referer->getPercentage();
+
+		$refLog = new ReferalHistory;
+		$refLog->setAmount($amount)
+			   ->setVisitorid($referedUserId)
+			   ->setInviterId($refererId)
+			   ->setPercentage($percentage)
+			   ->setDatetime(new \Datetime);
+
+		$em->persist($refLog);
+		$em->flush();
+
+		$marginAmount = ceil(($amount / 100) * $percentage);
+		$finSystem->increaseBalance($marginAmount, $refererId, 'referal margin', $em);
 	}
 
 }

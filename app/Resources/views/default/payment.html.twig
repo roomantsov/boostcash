@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <form action="{{ path('paypagepost') }}" method="POST" class="form-inline" role="form">
+       	<div class="form-group">
+    		<label class="sr-only" for="">Размер платежа (РУБ)</label>
+    		<input type="number" name="amount" class="form-control" id="" placeholder="payment amount">
+    	</div>
+    	<button type="submit" class="btn btn-primary">Внести</button>
+    </form>
+{% endblock %}
